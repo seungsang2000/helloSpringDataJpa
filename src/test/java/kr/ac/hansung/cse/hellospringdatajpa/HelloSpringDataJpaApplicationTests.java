@@ -8,6 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -65,6 +68,55 @@ class HelloSpringDataJpaApplicationTests {
 			logger.info("Product created: {}", p);
 			assertEquals("OLED TV", p.getName());
 		});
+	}
+
+	@Test
+	@DisplayName("Test4: findByName")
+	public void findByName() {
+
+		Product product = productRepository.findByName("Galaxy S21");
+		assertEquals("Galaxy S21", product.getName());
+	}
+
+	@Test
+	@DisplayName("Test5: findByNameContainingWithPaging")
+	public void findByNameContainingWithPaging() {
+
+		Pageable paging = PageRequest.of(1, 3);
+		List<Product> productList = productRepository.findByNameContaining("MacBook", paging);
+
+		logger.info("====findByNameContainingWithPaging: MacBook=====");
+		productList.forEach(product -> logger.info("--> {}", product));
+
+		assertEquals(3, productList.size(), "Expected 3 products containing 'MacBook'");
+
+	}
+
+	@Test
+	@DisplayName("Test6: findByNameContainingWithPagingAndSort")
+	public void findByNameContainingWithPagingAndSort( ) {
+
+		Pageable paging = PageRequest.of(0, 3, Sort.Direction.DESC, "id");
+
+		List<Product> productList =
+				productRepository.findByNameContaining("Galaxy", paging);
+
+		logger.info("===findByNameContainingWithPagingAndSort: Galaxy====");
+		productList.forEach(product -> logger.info("--> {}", product));
+
+		assertEquals(3, productList.size(), "Expected 3 products containing 'Galaxy'");
+
+	}
+
+	@Test
+	@DisplayName("Test7: searchByNameUsingQuery")
+	public void searchByNameUsingQuery() {
+		List<Product> productList= productRepository.searchByName("Air");
+
+		logger.info("====searchByNameUsingQuery: Air====");
+		productList.forEach(product -> logger.info("--> {}", product));
+
+		assertEquals(6, productList.size(), "Expected 6 product containing 'Air'");
 	}
 
 }
