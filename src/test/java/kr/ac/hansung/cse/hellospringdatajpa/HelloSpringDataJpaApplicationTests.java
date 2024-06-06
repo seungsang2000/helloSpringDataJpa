@@ -75,7 +75,7 @@ class HelloSpringDataJpaApplicationTests {
 	public void findByName() {
 
 		Product product = productRepository.findByName("Galaxy S21");
-		assertEquals("Galaxy S21", product.getName());
+		assertEquals("Galaxy S21", product.getName(), "Expected product name is 'Galaxy S21'");
 	}
 
 	@Test
